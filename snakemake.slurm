@@ -5,7 +5,7 @@
 #SBATCH -n 1                   # one task for this node
 #SBATCH -c 4                  # cores per task
 #SBATCH -t 2-0                 # ask for 2 days
-#SBATCH --mem=2000000             # memory (30,000 mb = 30gb)
+#SBATCH --mem=200000             # memory (30,000 mb = 30gb)
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=titus@idyll.org
 
