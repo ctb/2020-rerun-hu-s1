@@ -3,7 +3,7 @@
 #SBATCH -J hu-s1 # name for job
 #SBATCH -N 1                   # one "node", or computer
 #SBATCH -n 1                   # one task for this node
-#SBATCH -c 4                  # cores per task
+#SBATCH -c 8                  # cores per task
 #SBATCH -t 2-0                 # ask for 2 days
 #SBATCH --mem=200000             # memory (30,000 mb = 30gb)
 #SBATCH --mail-type=ALL
@@ -25,7 +25,8 @@ set -x
 cd ~/2020-rerun-hu
 
 # run the snakemake!
-python -m spacegraphcats.click run hu-s1.yaml search -j 4
+python -m spacegraphcats.click run hu-s1.yaml search extract_reads -j 8 &&
+snakemake --use-conda -j 8 -k
 
 # print out various information about the job
 env | grep SLURM            # Print out values of the current jobs SLURM environment variables
