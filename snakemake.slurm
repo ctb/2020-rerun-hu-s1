@@ -1,5 +1,5 @@
 #!/bin/bash -login
-#SBATCH -p bmm # partition, or queue, to assign to
+#SBATCH -p med2 # partition, or queue, to assign to
 #SBATCH -J hu-s1 # name for job
 #SBATCH -N 1                   # one "node", or computer
 #SBATCH -n 1                   # one task for this node
@@ -25,7 +25,6 @@ set -x
 cd ~/2020-rerun-hu
 
 # run the snakemake!
-python -m spacegraphcats.click run hu-s1.yaml search extract_reads -j 8 &&
 snakemake --use-conda -j 8 -k
 
 # print out various information about the job
