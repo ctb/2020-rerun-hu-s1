@@ -1,0 +1,27 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Bin Id                                               Marker lineage         # genomes   # markers   # marker sets    0     1    2    3    4    5+   Completeness   Contamination   Strain heterogeneity  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  hu-genome41.fa.cdbg_ids.reads.fa.gz.megahit     p__Euryarchaeota (UID49)        95         227           152         0    212   9    3    1    2       100.00          10.47              46.94          
+  hu-genome22.fa.cdbg_ids.reads.fa.gz.megahit     p__Euryarchaeota (UID3)        148         188           125         2    171   10   4    1    0       98.40           10.91              67.86          
+  hu-genome39.fa.cdbg_ids.reads.fa.gz.megahit   p__Actinobacteria (UID1454)      732         206           120         7    180   16   3    0    0       96.11            9.67              32.00          
+  hu-genome23.fa.cdbg_ids.reads.fa.gz.megahit    o__Clostridiales (UID1120)      304         250           143         12   231   7    0    0    0       94.99            2.03              14.29          
+  hu-genome36.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        104            58         3     21   54   23   1    2       94.83           98.02              69.80          
+  hu-genome33.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        104            58         4     83   10   3    2    2       94.83           26.57              69.35          
+  hu-genome37.fa.cdbg_ids.reads.fa.gz.megahit      k__Bacteria (UID2495)         2993        147            91         5    139   3    0    0    0       94.51            2.20               0.00          
+  hu-genome29.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        104            58         4     7    71   19   2    1       93.10           110.77             72.00          
+  hu-genome31.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID209)         5443        105            59         16    76   6    5    1    1       89.45           18.95              94.59          
+  hu-genome24.fa.cdbg_ids.reads.fa.gz.megahit        k__Archaea (UID2)           207         149           107         15    24   88   16   4    2       87.38           85.76              70.81          
+  hu-genome40.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        104            58         14    45   29   10   4    2       81.74           79.01              44.74          
+  hu-genome35.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        104            58         12    57   27   6    2    0       81.03           42.63              89.47          
+  hu-genome30.fa.cdbg_ids.reads.fa.gz.megahit        k__Archaea (UID2)           207         148           106         30    44   44   23   5    2       79.83           70.77              36.90          
+  hu-genome32.fa.cdbg_ids.reads.fa.gz.megahit      k__Bacteria (UID2569)         434         278           186         49   221   7    0    1    0       79.48            3.42               7.69          
+  hu-genome34.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID238)         2248        125            78         23    85   12   4    1    0       75.64           20.06              13.33          
+  hu-genome25.fa.cdbg_ids.reads.fa.gz.megahit      k__Bacteria (UID1452)         924         163           110         37    99   11   10   2    4       74.55           29.68              45.92          
+  hu-genome21.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        103            58         30    20   30   9    5    9       68.89           96.14              53.12          
+  hu-genome26.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        103            57         28    51   20   3    1    0       68.58           27.52              80.00          
+  hu-genome20.fa.cdbg_ids.reads.fa.gz.megahit      k__Bacteria (UID2570)         433         273           183        117    68   61   17   7    3       58.74           48.64              75.38          
+  hu-genome38.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        100            55         35    19   28   13   4    1       54.44           62.82              41.58          
+  hu-genome27.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        100            55         41    8    7    19   14   11      51.40           110.48             78.75          
+  hu-genome19.fa.cdbg_ids.reads.fa.gz.megahit      k__Bacteria (UID1453)         901         171           117         73    84   11   2    1    0       50.92            6.93               4.35          
+  hu-genome28.fa.cdbg_ids.reads.fa.gz.megahit       k__Bacteria (UID203)         5449        100            55         41    29   10   8    5    7       44.73           75.56              57.61          
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
