@@ -175,8 +175,8 @@ def plass_hardtrim_reads(conf_file):
 
 rule all:
     input:
-        catlas_search('conf/podar-ref.json'),
-        catlas_search('conf/podar-ref.json', cdbg_only=True),
+#        catlas_search('conf/podar-ref.json'), CTB
+#        catlas_search('conf/podar-ref.json', cdbg_only=True), CTB
         catlas_search('conf/podarV.json'),
         signatures(recover_fuso, recover_ruminis),
         signatures(strain_gingivalis, strain_denticola, strain_bacteroides),
@@ -335,7 +335,7 @@ rule extract_ruminis_reads:
     output:
         "ruminis.reads.fa"
     shell:
-        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]} --nolock"
+        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]}"
 
 rule podarV_fuso_search:
     input:
@@ -362,7 +362,7 @@ rule extract_fuso_reads:
     output:
         "fuso.reads.fa"
     shell:
-        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]} --nolock"
+        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]}"
 
 rule podarV_bacteroides_search:
     input:
@@ -594,8 +594,15 @@ rule checkm_plass:
         "checkm-plass.txt"
     conda:
         "envs/checkm.yaml"
-    shell:
-        "rm -fr checkm.plass.bins && mkdir checkm.plass.bins && ln {input} checkm.plass.bins && checkm lineage_wf -x fa checkm.plass.bins checkm.plass.out -t {threads} --genes --pplacer_threads={threads} -f checkm-plass.txt"
+    threads: 8
+    shell: """
+        rm -fr checkm.plass.bins
+        mkdir checkm.plass.bins
+        ln {input} checkm.plass.bins
+        checkm lineage_wf -x fa checkm.plass.bins checkm.plass.out \
+            -t {threads} --genes --pplacer_threads={threads} \
+            -f checkm-plass.txt
+    """
 
 
 rule checkm_hardtrim_plass:
@@ -606,6 +613,7 @@ rule checkm_hardtrim_plass:
         "checkm-hardtrim-plass.txt"
     conda:
         "envs/checkm.yaml"
+    threads: 8
     shell:
         "rm -fr checkm.hardtrim-plass.bins && mkdir checkm.hardtrim-plass.bins && ln {input} checkm.hardtrim-plass.bins && checkm lineage_wf -x fa checkm.hardtrim-plass.bins checkm.hardtrim-plass.out -t {threads} --genes --pplacer_threads={threads} -f checkm-hardtrim-plass.txt"
 
@@ -618,6 +626,7 @@ rule checkm_megahit:
         "checkm-megahit.txt"
     conda:
         "envs/checkm.yaml"
+    threads: 8
     shell:
         "rm -fr checkm.megahit.bins && mkdir checkm.megahit.bins && ln {input} checkm.megahit.bins && checkm lineage_wf -x fa checkm.megahit.bins checkm.megahit.out -t {threads} --pplacer_threads={threads} -f checkm-megahit.txt"
 
@@ -627,6 +636,7 @@ rule checkm_hu:
     output:
         directory("checkm.hu.out"),
         "checkm-hu.txt"
+    threads: 8
     conda:
         "envs/checkm.yaml"
     shell:
@@ -667,5 +677,6 @@ rule checkm_single_file:
         "checkm.{filename}.txt"
     conda:
         "envs/checkm.yaml"
+    threads: 8
     shell:
         "rm -fr {output[0]} && mkdir {output[0]} && ln {input} {output[0]} && checkm lineage_wf -x fa {output[0]} {output[1]} -t {threads} --pplacer_threads={threads} -f {output[2]}"
