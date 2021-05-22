@@ -264,7 +264,7 @@ rule podar_ref_search:
     output:
         catlas_search('conf/podar-ref.json')
     shell:
-        "{sys.executable} -m spacegraphcats conf/podar-ref.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podar-ref.json --nolock"
 
 rule podar_ref_search_cdbg_only:
     input:
@@ -272,7 +272,7 @@ rule podar_ref_search_cdbg_only:
     output:
         catlas_search('conf/podar-ref.json', cdbg_only=True),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podar-ref.json search --cdbg-only --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podar-ref.json --cdbg-only --nolock"
 
 rule podarV_build:
     input:
@@ -280,7 +280,7 @@ rule podarV_build:
     output:
         catlas_build('conf/podarV.json'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV.json build --nolock"
+        "{sys.executable} -m spacegraphcats build conf/podarV.json --nolock"
 
 rule podarV_search:
     input:
@@ -289,7 +289,7 @@ rule podarV_search:
     output:
         catlas_search('conf/podarV.json'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podarV.json --nolock"
 
 rule podarV_labeled_reads:
     input:
@@ -298,7 +298,7 @@ rule podarV_labeled_reads:
         "podarV_k31_r1/reads.bgz.labels",
         "podarV/podarV.reads.bgz"
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV.json {output[0]} --nolock"
+        "{sys.executable} -m spacegraphcats run conf/podarV.json {output[0]} --nolock"
 
 rule podarV_extract:
     input:
@@ -307,7 +307,7 @@ rule podarV_extract:
         catlas_extract('conf/podarV.json')
     threads: 16
     shell:
-        "{sys.executable} -m spacegraphcats.click run conf/podarV.json extract_contigs extract_reads -j {threads} --nolock"
+        "{sys.executable} -m spacegraphcats run conf/podarV.json extract_contigs extract_reads -j {threads} --nolock"
 
 
 rule podarV_ruminis_search:
@@ -317,7 +317,7 @@ rule podarV_ruminis_search:
     output:
         catlas_search('conf/podarV-ruminis.json', suffix='_ruminis'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-ruminis.json search --nolock"
+        "{sys.executable} -m spacegraphcats run conf/podarV-ruminis.json search --nolock"
 
 rule combine_ruminis_nodes:
     input:
@@ -344,7 +344,7 @@ rule podarV_fuso_search:
     output:
         catlas_search('conf/podarV-fuso.json', suffix='_fuso'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-fuso.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podarV-fuso.json --nolock"
 
 rule combine_fuso_nodes:
     input:
@@ -370,7 +370,7 @@ rule podarV_bacteroides_search:
     output:
         catlas_search('conf/podarV-bacteroides.json', suffix='_bacteroides'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-bacteroides.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podarV-bacteroides.json --nolock"
 
 rule podarV_gingivalis_search:
     input:
@@ -378,7 +378,7 @@ rule podarV_gingivalis_search:
     output:
         catlas_search('conf/podarV-gingivalis.json', suffix='_gingivalis'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-gingivalis.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podarV-gingivalis.json --nolock"
 
 rule podarV_denticola_search:
     input:
@@ -386,7 +386,7 @@ rule podarV_denticola_search:
     output:
         catlas_search('conf/podarV-denticola.json', suffix='_denticola'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-denticola.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/podarV-denticola.json --nolock"
 
 rule denticola_compare:
     input:
@@ -495,7 +495,7 @@ rule hu_s1_build:
     output:
         catlas_build('conf/hu-s1.json'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/hu-s1.json build --nolock"
+        "{sys.executable} -m spacegraphcats build conf/hu-s1.json --nolock"
 
 rule hu_s1_search:
     input:
@@ -504,7 +504,7 @@ rule hu_s1_search:
     output:
         catlas_search('conf/hu-s1.json'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/hu-s1.json search --nolock"
+        "{sys.executable} -m spacegraphcats search conf/hu-s1.json --nolock"
 
 rule hu_s1_labeled_reads:
     input:
@@ -513,7 +513,7 @@ rule hu_s1_labeled_reads:
         "hu-s1_k31_r1/reads.bgz.labels",
         "hu-s1/hu-s1.reads.bgz"
     shell:
-        "{sys.executable} -m spacegraphcats conf/hu-s1.json {output[0]} --nolock"
+        "{sys.executable} -m spacegraphcats run conf/hu-s1.json {output[0]} --nolock"
 
 rule hu_s1_extract:
     input:
@@ -522,7 +522,7 @@ rule hu_s1_extract:
         catlas_extract('conf/hu-s1.json')
     threads: 16
     shell:
-        "{sys.executable} -m spacegraphcats.click run conf/hu-s1.json extract_contigs extract_reads -j {threads} --nolock"
+        "{sys.executable} -m spacegraphcats run conf/hu-s1.json extract_contigs extract_reads -j {threads} --nolock"
 
 ### generic rules
 
