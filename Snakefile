@@ -510,7 +510,7 @@ rule hu_s1_labeled_reads:
     input:
         "SRR1976948.abundtrim.fq.gz"
     output:
-        "hu-s1_k31_r1/reads.bgz.labels",
+        "hu-s1_k31/reads.bgz.labels",
         "hu-s1/hu-s1.reads.bgz"
     shell:
         "{sys.executable} -m spacegraphcats run conf/hu-s1.json {output[0]} --nolock"
