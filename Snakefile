@@ -15,7 +15,7 @@ import json
 import screed
 
 from spacegraphcats.snakemake import (catlas_build, catlas_search,
-                                      catlas_extract, catlas_search_input)
+                                      catlas_extract_reads, catlas_search_input)
 
 
 podar_ref_genomes = expand("podar-ref/{num}.fa", num=range(0, 64))
@@ -191,7 +191,7 @@ rule all:
 	"denticola.x.contigs.cont.csv",
 	"gingivalis.x.contigs.cont.csv",
         catlas_search('conf/hu-s1.json'),
-        catlas_extract('conf/hu-s1.json'),
+        catlas_extract_reads('conf/hu-s1.json'),
         'fuso.reads.fa.megahit.fa', 'ruminis.reads.fa.megahit.fa',
         plass_assemblies('conf/hu-s1.json'),
         "checkm-plass.txt",
@@ -199,7 +199,7 @@ rule all:
         "checkm-megahit.txt",
         "checkm-hu.txt",
         signatures(megahit_assemblies('conf/hu-s1.json')),
-        signatures(catlas_extract('conf/hu-s1.json')),
+        signatures(catlas_extract_reads('conf/hu-s1.json')),
         plass_hardtrim_reads('conf/hu-s1.json'),
         "checkm-hardtrim-plass.txt",
         "megahit-containment.csv"
@@ -222,9 +222,9 @@ rule catlas_searches:
 	"denticola.x.contigs.cont.csv",
 	"gingivalis.x.contigs.cont.csv",
         catlas_search('conf/hu-s1.json'),
-        catlas_extract('conf/hu-s1.json'),
+        catlas_extract_reads('conf/hu-s1.json'),
         signatures(megahit_assemblies('conf/hu-s1.json')),
-        signatures(catlas_extract('conf/hu-s1.json'))
+        signatures(catlas_extract_reads('conf/hu-s1.json'))
 
 rule download_podar_ref_genomes:
     output:
@@ -264,7 +264,7 @@ rule podar_ref_search:
     output:
         catlas_search('conf/podar-ref.json')
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podar-ref.json --nolock"
+        "python -m spacegraphcats search conf/podar-ref.json --nolock"
 
 rule podar_ref_search_cdbg_only:
     input:
@@ -272,7 +272,7 @@ rule podar_ref_search_cdbg_only:
     output:
         catlas_search('conf/podar-ref.json', cdbg_only=True),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podar-ref.json --cdbg-only --nolock"
+        "python -m spacegraphcats search conf/podar-ref.json --cdbg-only --nolock"
 
 rule podarV_build:
     input:
@@ -280,7 +280,7 @@ rule podarV_build:
     output:
         catlas_build('conf/podarV.json'),
     shell:
-        "{sys.executable} -m spacegraphcats build conf/podarV.json --nolock"
+        "python -m spacegraphcats build conf/podarV.json --nolock"
 
 rule podarV_search:
     input:
@@ -289,25 +289,25 @@ rule podarV_search:
     output:
         catlas_search('conf/podarV.json'),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podarV.json --nolock"
+        "python -m spacegraphcats search conf/podarV.json --nolock"
 
 rule podarV_labeled_reads:
     input:
         "SRR606249.k31.abundtrim.fq.gz"
     output:
-        "podarV_k31_r1/reads.bgz.labels",
-        "podarV/podarV.reads.bgz"
+        "podarV_k31/reads.bgz.index",
+        "podarV/reads.bgz"
     shell:
-        "{sys.executable} -m spacegraphcats run conf/podarV.json {output[0]} --nolock"
+        "python -m spacegraphcats run conf/podarV.json {output} --nolock"
 
 rule podarV_extract:
     input:
         catlas_search('conf/podarV.json')
     output:
-        catlas_extract('conf/podarV.json')
+        catlas_extract_reads('conf/podarV.json')
     threads: 16
     shell:
-        "{sys.executable} -m spacegraphcats run conf/podarV.json extract_contigs extract_reads -j {threads} --nolock"
+        "python -m spacegraphcats run conf/podarV.json extract_contigs extract_reads -j {threads} --nolock"
 
 
 rule podarV_ruminis_search:
@@ -317,7 +317,7 @@ rule podarV_ruminis_search:
     output:
         catlas_search('conf/podarV-ruminis.json', suffix='_ruminis'),
     shell:
-        "{sys.executable} -m spacegraphcats run conf/podarV-ruminis.json search --nolock"
+        "python -m spacegraphcats run conf/podarV-ruminis.json search --nolock"
 
 rule combine_ruminis_nodes:
     input:
@@ -326,16 +326,17 @@ rule combine_ruminis_nodes:
     output:
         "ruminis-combined-node-list.txt.gz"
     shell:
-        "gunzip -c {input} | gzip -9c > {output[0]}"
+        "gunzip -c {input} | gzip -9c > {output}"
 
 rule extract_ruminis_reads:
     input:
-        "ruminis-combined-node-list.txt.gz",
-        "podarV_k31_r1/reads.bgz.labels"
+        nodelist = "ruminis-combined-node-list.txt.gz",
+        reads_bgz = "podarV/reads.bgz",
+        reads_idx = "podarV_k31/reads.bgz.index"
     output:
         "ruminis.reads.fa"
     shell:
-        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]}"
+        "python -m spacegraphcats.search.extract_reads {input.reads_bgz} {input.reads_idx} {input.nodelist} -o {output}"
 
 rule podarV_fuso_search:
     input:
@@ -344,7 +345,7 @@ rule podarV_fuso_search:
     output:
         catlas_search('conf/podarV-fuso.json', suffix='_fuso'),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podarV-fuso.json --nolock"
+        "python -m spacegraphcats search conf/podarV-fuso.json --nolock"
 
 rule combine_fuso_nodes:
     input:
@@ -353,16 +354,17 @@ rule combine_fuso_nodes:
     output:
         "fuso-combined-node-list.txt.gz"
     shell:
-        "gunzip -c {input} | gzip -9c > {output[0]}"
+        "gunzip -c {input} | gzip -9c > {output}"
 
 rule extract_fuso_reads:
     input:
-        "fuso-combined-node-list.txt.gz",
-        "podarV_k31_r1/reads.bgz.labels"
+        nodelist = "fuso-combined-node-list.txt.gz",
+        reads_bgz = "podarV/reads.bgz",
+        reads_idx = "podarV_k31/reads.bgz.index"
     output:
         "fuso.reads.fa"
     shell:
-        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]}"
+        "python -m spacegraphcats.search.extract_reads {input.reads_bgz} {input.reads_idx} {input.nodelist} -o {output}"
 
 rule podarV_bacteroides_search:
     input:
@@ -370,7 +372,7 @@ rule podarV_bacteroides_search:
     output:
         catlas_search('conf/podarV-bacteroides.json', suffix='_bacteroides'),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podarV-bacteroides.json --nolock"
+        "python -m spacegraphcats search conf/podarV-bacteroides.json --nolock"
 
 rule podarV_gingivalis_search:
     input:
@@ -378,7 +380,7 @@ rule podarV_gingivalis_search:
     output:
         catlas_search('conf/podarV-gingivalis.json', suffix='_gingivalis'),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podarV-gingivalis.json --nolock"
+        "python -m spacegraphcats search conf/podarV-gingivalis.json --nolock"
 
 rule podarV_denticola_search:
     input:
@@ -386,7 +388,7 @@ rule podarV_denticola_search:
     output:
         catlas_search('conf/podarV-denticola.json', suffix='_denticola'),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/podarV-denticola.json --nolock"
+        "python -m spacegraphcats search conf/podarV-denticola.json --nolock"
 
 rule denticola_compare:
     input:
@@ -495,7 +497,7 @@ rule hu_s1_build:
     output:
         catlas_build('conf/hu-s1.json'),
     shell:
-        "{sys.executable} -m spacegraphcats build conf/hu-s1.json --nolock"
+        "python -m spacegraphcats build conf/hu-s1.json --nolock"
 
 rule hu_s1_search:
     input:
@@ -504,25 +506,25 @@ rule hu_s1_search:
     output:
         catlas_search('conf/hu-s1.json'),
     shell:
-        "{sys.executable} -m spacegraphcats search conf/hu-s1.json --nolock"
+        "python -m spacegraphcats search conf/hu-s1.json --nolock"
 
 rule hu_s1_labeled_reads:
     input:
         "SRR1976948.abundtrim.fq.gz"
     output:
-        "hu-s1_k31/reads.bgz.labels",
+        "hu-s1_k31/reads.bgz.index",
         "hu-s1/hu-s1.reads.bgz"
     shell:
-        "{sys.executable} -m spacegraphcats run conf/hu-s1.json {output[0]} --nolock"
+        "python -m spacegraphcats run conf/hu-s1.json {output} --nolock"
 
 rule hu_s1_extract:
     input:
         catlas_search('conf/hu-s1.json')
     output:
-        catlas_extract('conf/hu-s1.json')
+        catlas_extract_reads('conf/hu-s1.json')
     threads: 16
     shell:
-        "{sys.executable} -m spacegraphcats run conf/hu-s1.json extract_contigs extract_reads -j {threads} --nolock"
+        "python -m spacegraphcats run conf/hu-s1.json extract_contigs extract_reads -j {threads} --nolock"
 
 ### generic rules
 
@@ -532,7 +534,7 @@ rule compute_signature_for_genome:
     output:
         "{genomefile}.sig"
     shell:
-        "sourmash compute -k 31 --scaled=1000 {input[0]} -o {output[0]}"
+        "sourmash compute -k 31 --scaled=1000 {input} -o {output}"
 
 rule assemble_megahit:
     input:
@@ -652,12 +654,12 @@ rule do_hardtrim_reads:
 
 rule megahit_read_containment:
     input:
-        "{filename}.sig",
-        "{filename}.megahit.fa.sig"
+        genome = "{filename}.sig",
+        assembly = "{filename}.megahit.fa.sig"
     output:
         "{filename}.megahit.cont.csv"
     shell:
-        "sourmash search --threshold=0.0 -k 31 --scaled=1000 {input[0]} {input[1]} --containment -o {output}"
+        "sourmash search --threshold=0.0 -k 31 --scaled=1000 {input.genome} {input.assembly} --containment -o {output}"
 
 rule megahit_read_containment_summary:
     input:
@@ -666,17 +668,17 @@ rule megahit_read_containment_summary:
     output:
         "megahit-containment.csv"
     shell:
-        "head -1 {input[0]} > {output} && grep -hv 'similarity,' {input} >> {output}"
+        "head -1 {input} > {output} && grep -hv 'similarity,' {input} >> {output}"
 
 rule checkm_single_file:
     input:
         "{filename}.fa"
     output:
-        directory("checkm.{filename}.bins"),
-        directory("checkm.{filename}.out"),
-        "checkm.{filename}.txt"
+        bins = directory("checkm.{filename}.bins"),
+        out = directory("checkm.{filename}.out"),
+        summary = "checkm.{filename}.txt"
     conda:
         "envs/checkm.yaml"
     threads: 8
     shell:
-        "rm -fr {output[0]} && mkdir {output[0]} && ln {input} {output[0]} && checkm lineage_wf -x fa {output[0]} {output[1]} -t {threads} --pplacer_threads={threads} -f {output[2]}"
+        "rm -fr {output.bins} && mkdir {output.bins} && ln {input} {output.bins} && checkm lineage_wf -x fa {output.bins} {output.out} -t {threads} --pplacer_threads={threads} -f {output.summary}"

@@ -25,7 +25,8 @@ set -x
 cd ~/2020-rerun-hu
 
 # run the snakemake!
-snakemake --use-conda -j 8 -k hu_s1_extract
+snakemake --use-conda -j 8 -k --unlock
+snakemake --use-conda -j 8 -k
 
 # print out various information about the job
 env | grep SLURM            # Print out values of the current jobs SLURM environment variables
