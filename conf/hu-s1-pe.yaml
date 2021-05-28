@@ -1,3 +1,11 @@
+paired_reads: 1
+_other_data:
+- SRR1976948.abundtrim.fq.gz
+- SRR1977304.abundtrim.fq.gz
+- SRR1977249.abundtrim.fq.gz
+- SRR1977357.abundtrim.fq.gz
+- SRR1977296.abundtrim.fq.gz
+- SRR1977365.abundtrim.fq.gz
 catlas_base: hu-s1
 input_sequences:
 - SRR1976948.abundtrim.fq.gz
@@ -29,3 +37,4 @@ search:
 - hu-genomes/hu-genome39.fa
 searchquick:
 - hu-genomes/hu-genome32.fa
+
