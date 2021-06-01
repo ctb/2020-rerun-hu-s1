@@ -1,5 +1,5 @@
 #!/bin/bash -login
-#SBATCH -p med2 # partition, or queue, to assign to
+#SBATCH -p bmm # partition, or queue, to assign to
 #SBATCH -J hu-s1 # name for job
 #SBATCH -N 1                   # one "node", or computer
 #SBATCH -n 1                   # one task for this node
