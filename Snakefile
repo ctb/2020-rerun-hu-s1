@@ -570,7 +570,7 @@ rule plass_cd_hit:
     output:
         "{filename}.plass.cdhit.fa"
     shell:
-        "cd-hit -c 1 -i {input} -o {output}"
+        "cd-hit -M 5000 -c 1 -i {input} -o {output}"
 
 rule rename_plass_headers_clean:
     input:
