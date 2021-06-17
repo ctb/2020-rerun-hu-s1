@@ -11,11 +11,11 @@
 
 import os
 import itertools
-import json
+import json, yaml
 import screed
 
 from spacegraphcats.snakemake import (catlas_build, catlas_search,
-                                      catlas_extract, catlas_search_input)
+                                      catlas_extract_reads, catlas_search_input)
 
 
 podar_ref_genomes = expand("podar-ref/{num}.fa", num=range(0, 64))
@@ -48,7 +48,7 @@ def signatures(*filenames):
 def add_suffix_to_search_output(conf_file, suffix):
     "Produce the list of contigs.sig files output by 'conf/run <config> search"
     with open(conf_file, 'rt') as fp:
-        jj = json.load(fp)
+        jj = yaml.safe_load(fp)
 
     catlas_base = jj['catlas_base']
     ksize = jj['ksize']
@@ -68,7 +68,7 @@ def add_suffix_to_search_output(conf_file, suffix):
 def catlas_search_sigs(conf_file, cdbg_only=False, suffix=''):
     "Produce the list of contigs.sig files output by 'conf/run <config> search"
     with open(conf_file, 'rt') as fp:
-        jj = json.load(fp)
+        jj = yaml.safe_load(fp)
 
     catlas_base = jj['catlas_base']
     ksize = jj['ksize']
@@ -91,7 +91,7 @@ def catlas_search_sigs(conf_file, cdbg_only=False, suffix=''):
 def plass_assemblies(conf_file):
     "Produce PLASS assemblies!"
     with open(conf_file, 'rt') as fp:
-        jj = json.load(fp)
+        jj = yaml.safe_load(fp)
 
     catlas_base = jj['catlas_base']
     ksize = jj['ksize']
@@ -103,7 +103,7 @@ def plass_assemblies(conf_file):
     z = []
     for x in filenames:
         x = os.path.basename(x)
-        output = dirname + '/{}.cdbg_ids.reads.fa.gz.plass.cdhit.fa.clean.cut.dup.fa'.format(x)
+        output = dirname + '/{}.cdbg_ids.reads.gz.plass.cdhit.fa.clean.cut.dup.fa'.format(x)
         z.append(output)
 
     return z
@@ -112,7 +112,7 @@ def plass_assemblies(conf_file):
 def megahit_assemblies(conf_file):
     "Produce Megahit assemblies!"
     with open(conf_file, 'rt') as fp:
-        jj = json.load(fp)
+        jj = yaml.safe_load(fp)
 
     catlas_base = jj['catlas_base']
     ksize = jj['ksize']
@@ -124,7 +124,7 @@ def megahit_assemblies(conf_file):
     z = []
     for x in filenames:
         x = os.path.basename(x)
-        output = dirname + '/{}.cdbg_ids.reads.fa.gz.megahit.fa'.format(x)
+        output = dirname + '/{}.cdbg_ids.reads.gz.megahit.fa'.format(x)
         z.append(output)
 
     return z
@@ -133,7 +133,7 @@ def megahit_assemblies(conf_file):
 def hardtrim_reads(conf_file):
     "Produce hardtrimmed reads!"
     with open(conf_file, 'rt') as fp:
-        jj = json.load(fp)
+        jj = yaml.safe_load(fp)
 
     catlas_base = jj['catlas_base']
     ksize = jj['ksize']
@@ -145,7 +145,7 @@ def hardtrim_reads(conf_file):
     z = []
     for x in filenames:
         x = os.path.basename(x)
-        output = dirname + '/{}.cdbg_ids.reads.hardtrim.fa.gz'.format(x)
+        output = dirname + '/{}.cdbg_ids.reads.hardtrim.gz'.format(x)
         z.append(output)
 
     return z
@@ -154,7 +154,7 @@ def hardtrim_reads(conf_file):
 def plass_hardtrim_reads(conf_file):
     "Produce plass assemblies of hardtrimmed reads!"
     with open(conf_file, 'rt') as fp:
-        jj = json.load(fp)
+        jj = yaml.safe_load(fp)
 
     catlas_base = jj['catlas_base']
     ksize = jj['ksize']
@@ -166,7 +166,7 @@ def plass_hardtrim_reads(conf_file):
     z = []
     for x in filenames:
         x = os.path.basename(x)
-        output = dirname + '/{}.cdbg_ids.reads.hardtrim.fa.gz.plass.cdhit.fa'.format(x)
+        output = dirname + '/{}.cdbg_ids.reads.hardtrim.gz.plass.cdhit.fa'.format(x)
         z.append(output)
 
     return z
@@ -190,17 +190,17 @@ rule all:
 	"bacteroides.x.contigs.cont.csv",
 	"denticola.x.contigs.cont.csv",
 	"gingivalis.x.contigs.cont.csv",
-        catlas_search('conf/hu-s1.json'),
-        catlas_extract('conf/hu-s1.json'),
+        catlas_search('conf/hu-s1-pe.yaml'),
+        catlas_extract_reads('conf/hu-s1-pe.yaml'),
         'fuso.reads.fa.megahit.fa', 'ruminis.reads.fa.megahit.fa',
-        plass_assemblies('conf/hu-s1.json'),
+        plass_assemblies('conf/hu-s1-pe.yaml'),
         "checkm-plass.txt",
-        megahit_assemblies('conf/hu-s1.json'),
+        megahit_assemblies('conf/hu-s1-pe.yaml'),
         "checkm-megahit.txt",
         "checkm-hu.txt",
-        signatures(megahit_assemblies('conf/hu-s1.json')),
-        signatures(catlas_extract('conf/hu-s1.json')),
-        plass_hardtrim_reads('conf/hu-s1.json'),
+        signatures(megahit_assemblies('conf/hu-s1-pe.yaml')),
+        signatures(catlas_extract_reads('conf/hu-s1-pe.yaml')),
+        plass_hardtrim_reads('conf/hu-s1-pe.yaml'),
         "checkm-hardtrim-plass.txt",
         "megahit-containment.csv"
 
@@ -221,10 +221,10 @@ rule catlas_searches:
 	"bacteroides.x.contigs.cont.csv",
 	"denticola.x.contigs.cont.csv",
 	"gingivalis.x.contigs.cont.csv",
-        catlas_search('conf/hu-s1.json'),
-        catlas_extract('conf/hu-s1.json'),
-        signatures(megahit_assemblies('conf/hu-s1.json')),
-        signatures(catlas_extract('conf/hu-s1.json'))
+        catlas_search('conf/hu-s1-pe.yaml'),
+        catlas_extract_reads('conf/hu-s1-pe.yaml'),
+        signatures(megahit_assemblies('conf/hu-s1-pe.yaml')),
+        signatures(catlas_extract_reads('conf/hu-s1-pe.yaml'))
 
 rule download_podar_ref_genomes:
     output:
@@ -264,7 +264,7 @@ rule podar_ref_search:
     output:
         catlas_search('conf/podar-ref.json')
     shell:
-        "{sys.executable} -m spacegraphcats conf/podar-ref.json search --nolock"
+        "python -m spacegraphcats search conf/podar-ref.json --nolock"
 
 rule podar_ref_search_cdbg_only:
     input:
@@ -272,7 +272,7 @@ rule podar_ref_search_cdbg_only:
     output:
         catlas_search('conf/podar-ref.json', cdbg_only=True),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podar-ref.json search --cdbg-only --nolock"
+        "python -m spacegraphcats search conf/podar-ref.json --cdbg-only --nolock"
 
 rule podarV_build:
     input:
@@ -280,7 +280,7 @@ rule podarV_build:
     output:
         catlas_build('conf/podarV.json'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV.json build --nolock"
+        "python -m spacegraphcats build conf/podarV.json --nolock"
 
 rule podarV_search:
     input:
@@ -289,25 +289,25 @@ rule podarV_search:
     output:
         catlas_search('conf/podarV.json'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV.json search --nolock"
+        "python -m spacegraphcats search conf/podarV.json --nolock"
 
 rule podarV_labeled_reads:
     input:
         "SRR606249.k31.abundtrim.fq.gz"
     output:
-        "podarV_k31_r1/reads.bgz.labels",
-        "podarV/podarV.reads.bgz"
+        "podarV_k31/reads.bgz.index",
+        "podarV/reads.bgz"
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV.json {output[0]} --nolock"
+        "python -m spacegraphcats run conf/podarV.json {output} --nolock"
 
 rule podarV_extract:
     input:
         catlas_search('conf/podarV.json')
     output:
-        catlas_extract('conf/podarV.json')
+        catlas_extract_reads('conf/podarV.json')
     threads: 16
     shell:
-        "{sys.executable} -m spacegraphcats.click run conf/podarV.json extract_contigs extract_reads -j {threads} --nolock"
+        "python -m spacegraphcats run conf/podarV.json extract_contigs extract_reads -j {threads} --nolock"
 
 
 rule podarV_ruminis_search:
@@ -317,7 +317,7 @@ rule podarV_ruminis_search:
     output:
         catlas_search('conf/podarV-ruminis.json', suffix='_ruminis'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-ruminis.json search --nolock"
+        "python -m spacegraphcats run conf/podarV-ruminis.json search --nolock"
 
 rule combine_ruminis_nodes:
     input:
@@ -326,16 +326,17 @@ rule combine_ruminis_nodes:
     output:
         "ruminis-combined-node-list.txt.gz"
     shell:
-        "gunzip -c {input} | gzip -9c > {output[0]}"
+        "gunzip -c {input} | gzip -9c > {output}"
 
 rule extract_ruminis_reads:
     input:
-        "ruminis-combined-node-list.txt.gz",
-        "podarV_k31_r1/reads.bgz.labels"
+        nodelist = "ruminis-combined-node-list.txt.gz",
+        reads_bgz = "podarV/reads.bgz",
+        reads_idx = "podarV_k31/reads.bgz.index"
     output:
         "ruminis.reads.fa"
     shell:
-        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]}"
+        "python -m spacegraphcats.search.extract_reads {input.reads_bgz} {input.reads_idx} {input.nodelist} -o {output}"
 
 rule podarV_fuso_search:
     input:
@@ -344,7 +345,7 @@ rule podarV_fuso_search:
     output:
         catlas_search('conf/podarV-fuso.json', suffix='_fuso'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-fuso.json search --nolock"
+        "python -m spacegraphcats search conf/podarV-fuso.json --nolock"
 
 rule combine_fuso_nodes:
     input:
@@ -353,16 +354,17 @@ rule combine_fuso_nodes:
     output:
         "fuso-combined-node-list.txt.gz"
     shell:
-        "gunzip -c {input} | gzip -9c > {output[0]}"
+        "gunzip -c {input} | gzip -9c > {output}"
 
 rule extract_fuso_reads:
     input:
-        "fuso-combined-node-list.txt.gz",
-        "podarV_k31_r1/reads.bgz.labels"
+        nodelist = "fuso-combined-node-list.txt.gz",
+        reads_bgz = "podarV/reads.bgz",
+        reads_idx = "podarV_k31/reads.bgz.index"
     output:
         "fuso.reads.fa"
     shell:
-        "python -m spacegraphcats.search.extract_reads podarV/podarV.reads.bgz podarV_k31_r1/reads.bgz.labels {input[0]} -o {output[0]}"
+        "python -m spacegraphcats.search.extract_reads {input.reads_bgz} {input.reads_idx} {input.nodelist} -o {output}"
 
 rule podarV_bacteroides_search:
     input:
@@ -370,7 +372,7 @@ rule podarV_bacteroides_search:
     output:
         catlas_search('conf/podarV-bacteroides.json', suffix='_bacteroides'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-bacteroides.json search --nolock"
+        "python -m spacegraphcats search conf/podarV-bacteroides.json --nolock"
 
 rule podarV_gingivalis_search:
     input:
@@ -378,7 +380,7 @@ rule podarV_gingivalis_search:
     output:
         catlas_search('conf/podarV-gingivalis.json', suffix='_gingivalis'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-gingivalis.json search --nolock"
+        "python -m spacegraphcats search conf/podarV-gingivalis.json --nolock"
 
 rule podarV_denticola_search:
     input:
@@ -386,7 +388,7 @@ rule podarV_denticola_search:
     output:
         catlas_search('conf/podarV-denticola.json', suffix='_denticola'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/podarV-denticola.json search --nolock"
+        "python -m spacegraphcats search conf/podarV-denticola.json --nolock"
 
 rule denticola_compare:
     input:
@@ -493,36 +495,36 @@ rule hu_s1_build:
     input:
         "SRR1976948.abundtrim.fq.gz"
     output:
-        catlas_build('conf/hu-s1.json'),
+        catlas_build('conf/hu-s1-pe.yaml'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/hu-s1.json build --nolock"
+        "python -m spacegraphcats build conf/hu-s1-pe.yaml --nolock"
 
 rule hu_s1_search:
     input:
-        catlas_build('conf/hu-s1.json'),
-        catlas_search_input('conf/hu-s1.json')
+        catlas_build('conf/hu-s1-pe.yaml'),
+        catlas_search_input('conf/hu-s1-pe.yaml')
     output:
-        catlas_search('conf/hu-s1.json'),
+        catlas_search('conf/hu-s1-pe.yaml'),
     shell:
-        "{sys.executable} -m spacegraphcats conf/hu-s1.json search --nolock"
+        "python -m spacegraphcats search conf/hu-s1-pe.yaml --nolock"
 
 rule hu_s1_labeled_reads:
     input:
         "SRR1976948.abundtrim.fq.gz"
     output:
-        "hu-s1_k31_r1/reads.bgz.labels",
+        "hu-s1_k31/reads.bgz.index",
         "hu-s1/hu-s1.reads.bgz"
     shell:
-        "{sys.executable} -m spacegraphcats conf/hu-s1.json {output[0]} --nolock"
+        "python -m spacegraphcats run conf/hu-s1-pe.yaml {output} --nolock"
 
 rule hu_s1_extract:
     input:
-        catlas_search('conf/hu-s1.json')
+        catlas_search('conf/hu-s1-pe.yaml')
     output:
-        catlas_extract('conf/hu-s1.json')
+        catlas_extract_reads('conf/hu-s1-pe.yaml')
     threads: 16
     shell:
-        "{sys.executable} -m spacegraphcats.click run conf/hu-s1.json extract_contigs extract_reads -j {threads} --nolock"
+        "python -m spacegraphcats run conf/hu-s1-pe.yaml extract_contigs extract_reads -j {threads} --nolock"
 
 ### generic rules
 
@@ -532,7 +534,7 @@ rule compute_signature_for_genome:
     output:
         "{genomefile}.sig"
     shell:
-        "sourmash compute -k 31 --scaled=1000 {input[0]} -o {output[0]}"
+        "sourmash compute -k 31 --scaled=1000 {input} -o {output}"
 
 rule assemble_megahit:
     input:
@@ -568,7 +570,7 @@ rule plass_cd_hit:
     output:
         "{filename}.plass.cdhit.fa"
     shell:
-        "cd-hit -c 1 -i {input} -o {output}"
+        "cd-hit -M 5000 -c 1 -i {input} -o {output}"
 
 rule rename_plass_headers_clean:
     input:
@@ -588,7 +590,7 @@ rule rename_plass_headers_clean:
 
 rule checkm_plass:
     input:
-        plass_assemblies('conf/hu-s1.json')
+        plass_assemblies('conf/hu-s1-pe.yaml')
     output:
         directory("checkm.plass.out"),
         "checkm-plass.txt"
@@ -607,7 +609,7 @@ rule checkm_plass:
 
 rule checkm_hardtrim_plass:
     input:
-        plass_hardtrim_reads('conf/hu-s1.json')
+        plass_hardtrim_reads('conf/hu-s1-pe.yaml')
     output:
         directory("checkm.hardtrim-plass.out"),
         "checkm-hardtrim-plass.txt"
@@ -620,7 +622,7 @@ rule checkm_hardtrim_plass:
 
 rule checkm_megahit:
     input:
-        megahit_assemblies('conf/hu-s1.json')
+        megahit_assemblies('conf/hu-s1-pe.yaml')
     output:
         directory("checkm.megahit.out"),
         "checkm-megahit.txt"
@@ -644,39 +646,39 @@ rule checkm_hu:
 
 rule do_hardtrim_reads:
     input:
-        "{filename}.fa.gz"
+        "{filename}.gz"
     output:
-        "{filename}.hardtrim.fa.gz"
+        "{filename}.hardtrim.gz"
     shell:
         "trim-low-abund.py -C 5 -M 20e9 -k 31 {input} --gzip -o {output}"
 
 rule megahit_read_containment:
     input:
-        "{filename}.sig",
-        "{filename}.megahit.fa.sig"
+        genome = "{filename}.sig",
+        assembly = "{filename}.megahit.fa.sig"
     output:
         "{filename}.megahit.cont.csv"
     shell:
-        "sourmash search --threshold=0.0 -k 31 --scaled=1000 {input[0]} {input[1]} --containment -o {output}"
+        "sourmash search --threshold=0.0 -k 31 --scaled=1000 {input.genome} {input.assembly} --containment -o {output}"
 
 rule megahit_read_containment_summary:
     input:
-        add_suffix_to_search_output('conf/hu-s1.json',
-                                    'cdbg_ids.reads.fa.gz.megahit.cont.csv')
+        add_suffix_to_search_output('conf/hu-s1-pe.yaml',
+                                    'cdbg_ids.reads.gz.megahit.cont.csv')
     output:
         "megahit-containment.csv"
     shell:
-        "head -1 {input[0]} > {output} && grep -hv 'similarity,' {input} >> {output}"
+        "head -1 {input} > {output} && grep -hv 'similarity,' {input} >> {output}"
 
 rule checkm_single_file:
     input:
         "{filename}.fa"
     output:
-        directory("checkm.{filename}.bins"),
-        directory("checkm.{filename}.out"),
-        "checkm.{filename}.txt"
+        bins = directory("checkm.{filename}.bins"),
+        out = directory("checkm.{filename}.out"),
+        summary = "checkm.{filename}.txt"
     conda:
         "envs/checkm.yaml"
     threads: 8
     shell:
-        "rm -fr {output[0]} && mkdir {output[0]} && ln {input} {output[0]} && checkm lineage_wf -x fa {output[0]} {output[1]} -t {threads} --pplacer_threads={threads} -f {output[2]}"
+        "rm -fr {output.bins} && mkdir {output.bins} && ln {input} {output.bins} && checkm lineage_wf -x fa {output.bins} {output.out} -t {threads} --pplacer_threads={threads} -f {output.summary}"
